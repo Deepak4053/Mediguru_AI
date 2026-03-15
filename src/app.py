@@ -12,9 +12,28 @@ st.set_page_config(
     page_icon="👨‍⚕️",
     layout="wide"
 )
-st.caption("🧠 MediGuru AI • Medical RAG Assistant")
+# CUSTOM CSS (Mobile Friendly)
+st.markdown("""
+<style>
 
-# SESSION STATE INITIALIZATION
+.block-container {
+    max-width: 900px;
+    padding-top: 1rem;
+}
+
+h1 {
+    text-align:center;
+}
+
+.stChatMessage {
+    border-radius: 12px;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+# SESSION STATE
+
 if "chats" not in st.session_state:
     st.session_state.chats = {"New Chat": []}
 
@@ -24,14 +43,16 @@ if "current_chat" not in st.session_state:
 if "disclaimer" not in st.session_state:
     st.session_state.disclaimer = False
 
-# CURRENT CHAT
+
 messages = st.session_state.chats[st.session_state.current_chat]
 
 # FORMAT CHAT HISTORY FOR RAG
+
 def get_chat_history():
     history = []
     for i in range(0, len(messages)-1, 2):
         if messages[i]["role"] == "user":
+
             history.append(
                 (messages[i]["content"], messages[i+1]["content"])
             )
@@ -41,9 +62,8 @@ def get_chat_history():
 # SIDEBAR
 with st.sidebar:
     st.title("👨‍⚕️ MediGuru")
-    st.warning(
-        "⚕️ Informational only. Not medical advice."
-    )
+    st.warning("⚕️ Informational only. Not medical advice.")
+
     st.session_state.disclaimer = st.checkbox(
         "I accept the disclaimer",
         value=st.session_state.disclaimer
@@ -53,10 +73,12 @@ with st.sidebar:
     st.subheader("💬 Conversations")
     for chat in st.session_state.chats:
         if st.button(chat):
+
             st.session_state.current_chat = chat
             st.rerun()
 
     if st.button("➕ New Conversation"):
+
         name = f"Chat {len(st.session_state.chats)+1}"
 
         st.session_state.chats[name] = []
@@ -65,7 +87,9 @@ with st.sidebar:
         st.rerun()
 
     st.divider()
+
     show_sources = st.toggle("Show Sources", value=True)
+
     if messages:
 
         st.download_button(
@@ -74,83 +98,96 @@ with st.sidebar:
             "mediguru_chat.json"
         )
 
-# DISCLAIMER
+# DISCLAIMER SCREEN
 if not st.session_state.disclaimer:
-
     st.markdown("""
     <div style="text-align:center;padding:100px">
-
     <h2>⚕️ Medical Disclaimer</h2>
-
     <p>This AI provides informational medical guidance.</p>
-
     <p>It is NOT a substitute for professional medical advice.</p>
-
     </div>
     """, unsafe_allow_html=True)
 
     st.stop()
-
 # HEADER
+
 st.title("👨‍⚕️ MediGuru AI")
-st.caption("Ask medical questions, analyze reports, and explore medical knowledge.")
+st.caption("Ask medical questions and analyze medical reports.")
 
-# DISPLAY CHAT
-for msg in messages:
-    avatar = "👨‍⚕️" if msg["role"] == "assistant" else "👤"
-    with st.chat_message(msg["role"], avatar=avatar):
-        st.markdown(msg["content"])
+# TABS
 
-# CHAT INPUT
-if prompt := st.chat_input("Ask a medical question..."):
+chat_tab, report_tab = st.tabs(
+    ["💬 Medical Chat", "📄 Report Analyzer"]
+)
+# CHAT TAB
+with chat_tab:
+    for msg in messages:
+        avatar = "👨‍⚕️" if msg["role"] == "assistant" else "👤"
+        with st.chat_message(msg["role"], avatar=avatar):
+            st.markdown(msg["content"])
 
-    messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user", avatar="👤"):
-        st.markdown(prompt)
-    with st.chat_message("assistant", avatar="👨‍⚕️"):
-        with st.spinner("Consulting medical knowledge..."):
-            history = get_chat_history()
+    prompt = st.chat_input("Ask a medical question...")
+    if prompt:
+        messages.append({"role": "user", "content": prompt})
+        with st.chat_message("user", avatar="👤"):
 
-            response, sources = medical_rag(prompt, history)
+            st.markdown(prompt)
+        with st.chat_message("assistant", avatar="👨‍⚕️"):
+            with st.spinner("Consulting medical knowledge..."):
+                history = get_chat_history()
+                response, sources = medical_rag(prompt, history)
+                placeholder = st.empty()
+                streamed = ""
+                for line in response.split("\n"):
+                    streamed += line + "\n"
 
-            placeholder = st.empty()
-            streamed_text = ""
+                    placeholder.markdown(streamed)
 
-            # stream response line-by-line
-            for line in response.split("\n"):
+                    time.sleep(0.03)
 
-                streamed_text += line + "\n"
+                if show_sources and sources:
 
-                placeholder.markdown(streamed_text)
+                    st.markdown("---")
+                    st.markdown("### 📚 Sources")
 
-                time.sleep(0.03)
+                    for s in sources:
 
-            if show_sources and sources:
+                        st.markdown(f"- {s}")
 
-                st.markdown("---")
-                st.markdown("### 📚 Sources")
+        messages.append({"role": "assistant", "content": response})
 
-                for s in sources:
+# REPORT ANALYZER TAB
+with report_tab:
 
-                    st.markdown(f"- {s}")
-
-    messages.append({"role": "assistant", "content": response})
-
-# REPORT ANALYZER
-with st.expander("📄 Analyze Medical Report"):
+    st.subheader("📄 Upload Medical Report")
     uploaded_file = st.file_uploader(
         "Upload medical report (PDF)",
         type=["pdf"]
     )
-    if uploaded_file and st.button("Analyze Report"):
-        with st.spinner("Reading report..."):
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
+    if uploaded_file:
+        col1, col2 = st.columns([1,1])
+        with col1:
+            st.success("PDF Uploaded")
 
-                tmp.write(uploaded_file.getvalue())
-                loader = PyPDFLoader(tmp.name)
-                docs = loader.load()
-                report_text = "\n".join([d.page_content for d in docs])
-                result = analyze_medical_report(report_text)
+        with col2:
+            analyze = st.button("Analyze Report")
+        if analyze:
 
-            st.markdown(result)
-            os.unlink(tmp.name)
+            with st.spinner("Reading report..."):
+                with tempfile.NamedTemporaryFile(
+                    delete=False,
+                    suffix=".pdf"
+                ) as tmp:
+
+                    tmp.write(uploaded_file.getvalue())
+                    loader = PyPDFLoader(tmp.name)
+
+                    docs = loader.load()
+                    report_text = "\n".join(
+                        [d.page_content for d in docs]
+                    )
+                    result = analyze_medical_report(
+                        report_text
+                    )
+                st.markdown(result)
+                os.unlink(tmp.name)
