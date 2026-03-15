@@ -1,81 +1,86 @@
 # 🧠 MediGuru AI
 
-MediGuru is an AI-powered medical assistant built using **RAG (Retrieval Augmented Generation)**.
+**MediGuru AI** is an intelligent medical knowledge assistant built using **Retrieval Augmented Generation (RAG)**.
 
-It allows users to:
+It combines **medical document retrieval, web search, and large language models** to provide reliable medical information.
 
-- Ask medical questions
-- Analyze medical reports (PDF)
-- Perform symptom triage
-- Search medical knowledge
+🌐 **Live Demo:**
+https://mediguruaibydeepak.streamlit.app
+
+---
+# 🚀 Features
+* 💬 Medical Question Answering
+* 📄 Medical Report Analyzer (PDF)
+* 🔎 Hybrid Retrieval (**FAISS + BM25**)
+* 🌐 Web Search Integration (**Tavily**)
+* 🧠 LLM Reasoning (**Google Gemini**)
+* 💾 Conversational Memory
+* 📚 Source Citations
+* ⚡ Interactive **Streamlit UI**
 
 ---
 
-## 🚀 Features
-
-- Hybrid RAG (FAISS + BM25 retrieval)
-- Web search augmentation (Tavily)
-- Gemini LLM reasoning
-- Conversational memory
-- PDF medical report analyzer
-- Source citations
-- Streamlit UI
-
----
-
-## 🏗 Architecture
+# 🏗 Architecture
 
 ```
 User Question
-      ↓
-Hybrid Retrieval (FAISS + BM25)
-      ↓
-Medical Documents
-      ↓
-Web Search
-      ↓
-Gemini LLM
-      ↓
-Structured Medical Answer
+      │
+      ▼
+Hybrid Retrieval
+(FAISS + BM25)
+      │
+      ▼
+Medical Knowledge Base
+      │
+      ▼
+Web Search (Tavily)
+      │
+      ▼
+Gemini LLM Reasoning
+      │
+      ▼
+Structured Medical Response
 ```
 
 ---
 
-## 📂 Project Structure
+# 📂 Project Structure
 
 ```
-src/
- ├── app.py
- ├── rag_engine.py
- ├── vector_store.py
- └── document_processor.py
+Mediguru_AI
+│
+├── src
+│   ├── app.py                # Streamlit interface
+│   ├── rag_engine.py        # RAG pipeline
+│
+├── vector_db                # FAISS vector database
+│
+├── requirements.txt
+├── README.md
 ```
-
 ---
-
-## ⚙️ Installation
-
-Clone repository
-
+# ⚙️ Installation
+### Clone the repository
 ```
-git clone https://https://github.com/Deepak4053/Mediguru_AI.git
+git clone https://github.com/Deepak4053/Mediguru_AI.git
 cd Mediguru_AI
 ```
-
-Install dependencies
+### Install dependencies
 
 ```
 pip install -r requirements.txt
 ```
 
-Add environment variables
+### Add environment variables
+
+Create a `.env` file:
 
 ```
 GOOGLE_API_KEY=your_key
 TAVILY_API_KEY=your_key
 ```
 
-Run the app
+### Run the app
 
 ```
 streamlit run src/app.py
@@ -83,17 +88,28 @@ streamlit run src/app.py
 
 ---
 
-## ⚠ Disclaimer
+# 📊 Tech Stack
 
-This project provides **educational medical information only** and is not a substitute for professional medical advice.
+* **Python**
+* **Streamlit**
+* **LangChain**
+* **FAISS Vector Database**
+* **Google Gemini LLM**
+* **Tavily Web Search**
+* **Sentence Transformers**
 
 ---
 
-## 📌 Tech Stack
+# ⚠ Disclaimer
 
-- Python
-- Streamlit
-- LangChain
-- FAISS
-- Gemini LLM
-- Tavily Search
+This project provides **educational medical information only** and **does not diagnose or prescribe treatments**.
+
+Always consult a qualified healthcare professional for medical advice.
+---
+
+# 👨‍💻 Author
+**Deepak Kumar Gaund**
+
+AI / ML Enthusiast | Electronics & Communication Engineering Student
+GitHub:
+https://github.com/Deepak4053
