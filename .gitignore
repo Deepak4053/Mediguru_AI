@@ -1,19 +1,10 @@
 # Python
 __pycache__/
 *.pyc
-
-# virtual environment
 .venv/
-
-# environment variables
 .env
-
-# vector database
 vector_db/
-
-# IDE files
 .idea/
-
-# OS
 .DS_Store
 Thumbs.db
+data/

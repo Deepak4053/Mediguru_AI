@@ -58,7 +58,7 @@ src/
 Clone repository
 
 ```
-git clone https://github.com/YOUR_USERNAME/mediguru-ai.git
+git clone https://https://github.com/Deepak4053/Mediguru_AI.git
 cd mediguru-ai
 ```
 
